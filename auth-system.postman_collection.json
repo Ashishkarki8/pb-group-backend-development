@@ -1,0 +1,163 @@
+{
+  "info": {
+    "name": "Admin Auth System - Production Ready",
+    "description": "Complete authentication flow with access token + refresh token rotation",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:9000",
+      "type": "string"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Admin Registration (SuperAdmin Only)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}",
+            "description": "Access token from login (SuperAdmin only)"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"username\": \"johndoe\",\n  \"password\": \"SecurePass123\",\n  \"role\": \"admin\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/admin/register",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "auth", "admin", "register"]
+        },
+        "description": "Register a new admin (requires SuperAdmin access token)\n\n**Middleware Flow:**\n1. Zod validation\n2. authMiddleware (check token)\n3. requireSuperAdmin (check role)\n4. registerAdmin controller"
+      },
+      "response": []
+    },
+    {
+      "name": "2. Admin Login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// Auto-save access token to collection variable",
+              "if (pm.response.code === 200) {",
+              "    const response = pm.response.json();",
+              "    if (response.success && response.data.accessToken) {",
+              "        pm.collectionVariables.set('accessToken', response.data.accessToken);",
+              "        console.log('✅ Access token saved:', response.data.accessToken);",
+              "    }",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"johndoe\",\n  \"password\": \"SecurePass123\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/admin/login",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "auth", "admin", "login"]
+        },
+        "description": "Login with username & password\n\n**Returns:**\n- Access token (in response body)\n- Refresh token (in HTTP-only cookie)\n\n**Access token** auto-saved to {{accessToken}} variable"
+      },
+      "response": []
+    },
+    {
+      "name": "3. Refresh Access Token",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// Auto-save new access token",
+              "if (pm.response.code === 200) {",
+              "    const response = pm.response.json();",
+              "    if (response.success && response.data.accessToken) {",
+              "        pm.collectionVariables.set('accessToken', response.data.accessToken);",
+              "        console.log('✅ New access token saved');",
+              "    }",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/refresh",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "auth", "refresh"]
+        },
+        "description": "Get new access token using refresh token\n\n**How it works:**\n1. Refresh token sent automatically via cookie\n2. Backend verifies it\n3. Returns NEW access token\n4. With rotation: Also returns NEW refresh token\n\n**No body needed!** Cookie does the work."
+      },
+      "response": []
+    },
+    {
+      "name": "4. Logout",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/logout",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "auth", "logout"]
+        },
+        "description": "Logout admin\n\n**What happens:**\n1. Clears refresh token from database\n2. Clears refresh token cookie\n3. Frontend should delete access token from Zustand"
+      },
+      "response": []
+    },
+    {
+      "name": "5. Test Protected Route (Example)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/admin/dashboard",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "admin", "dashboard"]
+        },
+        "description": "Example protected route\n\n**Replace this with your actual protected endpoints**\n\nUses authMiddleware to verify access token"
+      },
+      "response": []
+    }
+  ]
+}
