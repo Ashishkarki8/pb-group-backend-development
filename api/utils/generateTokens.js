@@ -19,7 +19,8 @@ export const generateAccessToken = (payload) => {
     payload,  // Data you want to encode
     appConfig.jwtAccessSecret,  // Secret key (MUST be strong!)
     { 
-      expiresIn: '15m',  // 15 minutes
+      expiresIn: '15m',  // 15 minutes  //testing 40 sec
+
       // WHY 15 min? Balance between:
       // - Security (short = less damage if stolen)
       // - UX (not too short = less frequent refreshes)
@@ -47,7 +48,7 @@ export const generateRefreshToken = (payload) => {
     payload,  // Same payload as access token
     appConfig.jwtRefreshSecret,  // DIFFERENT secret! Very important!
     { 
-      expiresIn: '7d',  // 7 days
+      expiresIn: '7d',  // 7 days      //testing   1m
       // WHY 7 days? Common practice:
       // - Long enough: user doesn't re-login constantly
       // - Short enough: limits damage if compromised

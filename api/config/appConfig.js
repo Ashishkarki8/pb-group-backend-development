@@ -12,13 +12,15 @@ const appConfig = {
   nodeEnv: process.env.NODE_ENV || "development",
   hiddenLoginPath: process.env.HIDDEN_LOGIN_PATH || "x7k9p2m",
   cloudinaryUrl: process.env.CLOUDINARY_URL,
+  redisURL: process.env.REDIS_URL
 };
 
 // Validation
 if (
   !appConfig.mongoURL ||
   !appConfig.jwtAccessSecret ||
-  !appConfig.jwtRefreshSecret
+  !appConfig.jwtRefreshSecret ||
+  !appConfig.redisURL 
 ) {
   throw new Error(
     "Missing critical environment variables. Check your Render environment variables."

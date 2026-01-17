@@ -34,6 +34,8 @@ import corsOptions from './api/config/corsConfig.js';
 import errorHandler from './api/middlewares/errorHandler.js';
 import xssSanitizer from './api/middlewares/xssSanitizer.js';
 import adminRouter from './api/routes/admin.routes.js';
+import router from './api/routes/dashboardRoutes.js';
+
 
 
 /**
@@ -151,7 +153,10 @@ app.get('/health', (req, res) => {
 // app.use('/api/auth', authRoutes);
 // app.use('/api/admins', adminRoutes);
 // app.use('/api/posters', posterRoutes);
+
 app.use('/api/auth',adminRouter)
+app.use('/api/dashboard',router)
+
 
 /**
  * ============================================================
@@ -179,8 +184,6 @@ app.use(errorHandler);
  * Export App (Server is started elsewhere)
  * ============================================================
  */
-
-
 
 
 export default app;

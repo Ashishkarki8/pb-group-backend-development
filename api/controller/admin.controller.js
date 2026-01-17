@@ -22,6 +22,7 @@
 
 import bcrypt from 'bcryptjs';
 import Admin from '../models/admin.model.js';
+import { invalidateCache } from '../services/cacheService.js';
 
 export const registerAdmin = async (req, res) => {
   try {
@@ -72,7 +73,13 @@ export const registerAdmin = async (req, res) => {
 
     // Step 5: Create admin in the database
     const newAdmin = await Admin.create(adminData);
-
+    
+    // Step 5.1: Invalidate relevant cache
+    // -------------------------------
+    await invalidateCache('dashboard:super:admins'); 
+    await invalidateCache('dashboard:shared:totalAdmins'); // deletes the cached value from Redis. because totalAdmins gets increased so Without invalidation, Redis still returns the old 15 admins until the TTL expires. and after that we request from db for nect call and update it again
+    console.log('🗑️ Cache invalidated after new admin creation');
+    
     // Step 6: Prepare response (never send password)
     const adminResponse = {
       _id: newAdmin._id,

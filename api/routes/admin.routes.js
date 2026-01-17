@@ -30,5 +30,4 @@ adminRouter.post('/refresh', refreshAccessToken);
 adminRouter.post('/logout', authMiddleware, logoutAdmin);
 
 
-
 export default adminRouter;
