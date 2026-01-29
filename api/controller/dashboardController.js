@@ -19,6 +19,7 @@ import {
  * Super Admin Dashboard
  * GET /api/dashboard/super-admin
  */
+
 export async function getSuperAdminDashboard(req, res) {
   try {
     const adminId = req.user.id; // From authMiddleware
@@ -76,7 +77,7 @@ export async function getAdminDashboard(req, res) {
     //     fetchNotifications(adminId, 'admin')
     //   )
     ]);
-     console.log("totalAdmins admin",totalAdmins)
+     console.log("totalAdmins admin",totalAdmins);
     res.json({
       success: true,
       role: 'admin',

@@ -2,7 +2,7 @@ import express from 'express';
 
 
 import { authMiddleware, requireAdmin, requireSuperAdmin } from '../middlewares/authMiddleware.js';
-import { getSuperAdminDashboard } from '../controller/dashboardController.js';
+import { getAdminDashboard, getSuperAdminDashboard } from '../controller/dashboardController.js';
 
 const router = express.Router();
 
@@ -19,7 +19,7 @@ router.get(
   '/admin',
   authMiddleware,
   requireAdmin, // Allows both admin & superAdmin
-  getSuperAdminDashboard
+  getAdminDashboard
 );
 
 export default router;

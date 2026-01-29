@@ -35,6 +35,8 @@ import errorHandler from './api/middlewares/errorHandler.js';
 import xssSanitizer from './api/middlewares/xssSanitizer.js';
 import adminRouter from './api/routes/admin.routes.js';
 import router from './api/routes/dashboardRoutes.js';
+import bannerRouter from './api/routes/callToActionRoutes.js';
+import serviceRouter from './api/routes/serviceRoutes.js';
 
 
 
@@ -156,6 +158,8 @@ app.get('/health', (req, res) => {
 
 app.use('/api/auth',adminRouter)
 app.use('/api/dashboard',router)
+app.use('/api/banners',bannerRouter);
+app.use('/api/services',serviceRouter);
 
 
 /**
